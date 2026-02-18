@@ -1,0 +1,26 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+collections:
+  - name: "products"
+    label: "Produkty"
+    files:
+      - file: "content/products.json"
+        label: "Lista produktów"
+        name: "products"
+        format: "json"
+        fields:
+          - label: "Produkty"
+            name: "items"
+            widget: "list"
+            fields:
+              - { label: "ID", name: "id", widget: "string" }
+              - { label: "Typ", name: "type", widget: "select", options: ["lozko", "materac"] }
+              - { label: "Nazwa", name: "name", widget: "string" }
+              - { label: "Cena", name: "price", widget: "number" }
+              - { label: "Opis", name: "desc", widget: "text" }
+              - { label: "Zdjęcie", name: "img", widget: "image", required: false }
