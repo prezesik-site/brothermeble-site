@@ -71,16 +71,40 @@ const DEFAULT_PRODUCTS = [
 ];
 
 function ensureInit(){
-  if(!localStorage.getItem(CFG.LS.products)) save(CFG.LS.products, DEFAULT_PRODUCTS);
   if(!localStorage.getItem(CFG.LS.cart)) save(CFG.LS.cart, []);
 }
 
-function getProducts(){
-  const p = load(CFG.LS.products, null);
-  if(Array.isArray(p) && p.length) return p;
-  save(CFG.LS.products, DEFAULT_PRODUCTS);
-  return DEFAULT_PRODUCTS.slice();
+
+let PRODUCTS_CACHE = null;
+
+async function loadProductsRemote(){
+  try{
+    const res = await fetch("content/products.json", { cache: "no-store" });
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    const data = await res.json();
+
+    const list = Array.isArray(data)
+      ? data
+      : (Array.isArray(data?.items) ? data.items : null);
+
+    if(Array.isArray(list)){
+      PRODUCTS_CACHE = list;
+      return list;
+    }
+  } catch(e){
+    // fallback
+  }
+
+  PRODUCTS_CACHE = DEFAULT_PRODUCTS.slice();
+  return PRODUCTS_CACHE;
 }
+
+function getProducts(){
+  return Array.isArray(PRODUCTS_CACHE)
+    ? PRODUCTS_CACHE
+    : DEFAULT_PRODUCTS.slice();
+}
+
 function findProduct(id){ return getProducts().find(p=>p.id===id); }
 
 function renderProducts(){
@@ -266,9 +290,10 @@ function close(el){ el.classList.remove("show"); el.setAttribute("aria-hidden","
 /* -------------------------
    BOOT
 --------------------------*/
-function boot(){
+async function boot(){
   ensureInit();
-  $("#year").textContent = new Date().getFullYear();
+  await loadProductsRemote();
+
 
   applyHeroFromStorage();
   renderProducts();
