@@ -292,6 +292,21 @@
 <div class="toast" id="toast" aria-live="polite"></div>
 
 <!-- 1) zwykły kod strony -->
+
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+<script>
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", user => {
+      if (!user) {
+        window.netlifyIdentity.on("login", () => {
+          document.location.href = "/admin/";
+        });
+      }
+    });
+  }
+</script>
+
 <script src="strona.js"></script>
 </body>
 </html>
