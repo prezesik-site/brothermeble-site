@@ -1,11 +1,16 @@
-/* BrotherMeble — czysta wersja:
-   - produkty z /content/products.json (Decap CMS)
-   - koszyk w localStorage
-   - brak publicznego uploadu hero
+/* BrotherMeble — prosta strona + oferta + koszyk + zamówienie przez Formspree.
+   Uwaga: to jest wersja statyczna (bez logowania i bez "admina w kodzie").
+   - Produkty są w tablicy DEFAULT_PRODUCTS (łatwo edytujesz).
+   - Koszyk trzyma się w localStorage.
+   - Checkout wysyła zamówienie przez Formspree (wstaw swoje ID w HTML).
 */
 
 const CFG = {
-  LS: { cart: "bm_cart_v5" }
+  businessEmail: "brothermeble24@gmail.com",
+  LS: {
+    cart: "bm_cart_v4",
+    products: "bm_products_v4"
+  }
 };
 
 const $ = (s, r=document) => r.querySelector(s);
@@ -14,12 +19,11 @@ const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
 function safeJSON(str, fallback){ try { return JSON.parse(str); } catch { return fallback; } }
 function load(key, fallback){ return safeJSON(localStorage.getItem(key), fallback); }
 function save(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
-function esc(s){ return String(s ?? "").replace(/[&<>\"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c])); }
 function money(v){ const n = Math.round(Number(v)||0); return n.toLocaleString("pl-PL")+" zł"; }
+function esc(s){ return String(s??"").replace(/[&<>\"']/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c])); }
 
 function toast(msg){
   const el = $("#toast");
-  if(!el) return;
   el.textContent = msg;
   el.classList.add("show");
   clearTimeout(window.__t);
@@ -34,55 +38,67 @@ function showPage(key){
   const el = document.getElementById("page-"+key);
   if(el) el.classList.add("show");
   $$(".navBtn").forEach(b => b.classList.toggle("active", b.dataset.nav === key));
-  $("#nav")?.classList.remove("show");
-}
-function bindNav(){
-  $$(".navBtn, .brand").forEach(btn=>{
-    btn.addEventListener("click", (e)=>{
-      const key = btn.dataset.nav;
-      if(!key) return; // np. link do /admin
-      e.preventDefault();
-      showPage(key);
-    });
-  });
-  $("#hamb")?.addEventListener("click", ()=> $("#nav")?.classList.toggle("show"));
+  $("#nav").classList.remove("show");
 }
 
 /* -------------------------
-   PRODUCTS (CMS)
+   PRODUCTS
 --------------------------*/
-let PRODUCTS_CACHE = [];
+const DEFAULT_PRODUCTS = [
+  { id:"lozko-marco", type:"lozko", name:"Łóżko Marco", price:2699, pop:90, tags:["160x200","pojemnik"], desc:"Nowoczesne łóżko tapicerowane. Opcjonalny pojemnik na pościel.", img:null },
+  { id:"lozko-slim-edge", type:"lozko", name:"Łóżko Slim Edge", price:2399, pop:85, tags:["140x200","160x200"], desc:"Smukła forma, idealna do mniejszych sypialni. Premium wygląd.", img:null },
+  { id:"materac-active-160", type:"materac", name:"Materac Active 160×200", price:1099, pop:80, tags:["160x200","kieszeniowy"], desc:"Kieszeniowy + pianka. Stabilne podparcie, dobry komfort.", img:null },
+  { id:"materac-comfort-140", type:"materac", name:"Materac Comfort 140×200", price:899, pop:70, tags:["140x200","pianka"], desc:"Piankowy materac do codziennego użytkowania.", img:null },
+];
+
+function ensureInit(){
+  if(!localStorage.getItem(CFG.LS.cart)) save(CFG.LS.cart, []);
+}
+
+let PRODUCTS_CACHE = null;
 
 async function loadProductsRemote(){
   try{
-    const res = await fetch("/content/products.json", { cache: "no-store" });
+    const res = await fetch("content/products.json", { cache: "no-store" });
     if(!res.ok) throw new Error("HTTP "+res.status);
     const data = await res.json();
-    const list = Array.isArray(data) ? data : (Array.isArray(data?.items) ? data.items : []);
-    PRODUCTS_CACHE = Array.isArray(list) ? list : [];
+
+    const list = Array.isArray(data)
+      ? data
+      : (Array.isArray(data?.items) ? data.items : null);
+
+    if(Array.isArray(list)){
+      PRODUCTS_CACHE = list;
+      return list;
+    }
   } catch(e){
-    PRODUCTS_CACHE = [];
+    // fallback
   }
+
+  PRODUCTS_CACHE = DEFAULT_PRODUCTS.slice();
+  return PRODUCTS_CACHE;
 }
 
-function getProducts(){ return PRODUCTS_CACHE.slice(); }
-function findProduct(id){ return getProducts().find(p => p.id === id); }
+function getProducts(){
+  return Array.isArray(PRODUCTS_CACHE)
+    ? PRODUCTS_CACHE
+    : DEFAULT_PRODUCTS.slice();
+}
+
+function findProduct(id){ return getProducts().find(p=>p.id===id); }
 
 function renderProducts(){
   const grid = $("#productsGrid");
-  if(!grid) return;
+  const q = ($("#offerSearch").value||"").trim().toLowerCase();
+  const type = $("#offerType").value;
+  const sort = $("#offerSort").value;
 
-  const q = ($("#offerSearch")?.value || "").trim().toLowerCase();
-  const type = $("#offerType")?.value || "all";
-  const sort = $("#offerSort")?.value || "pop";
-
-  let list = getProducts();
-
-  if(type !== "all") list = list.filter(p => p.type === type);
+  let list = getProducts().slice();
+  if(type !== "all") list = list.filter(p=>p.type===type);
 
   if(q){
     list = list.filter(p=>{
-      const hay = (p.name+" "+(p.desc||"")+" "+(p.tags||[]).join(" ")).toLowerCase();
+      const hay = (p.name+" "+p.desc+" "+(p.tags||[]).join(" ")).toLowerCase();
       return hay.includes(q);
     });
   }
@@ -92,9 +108,8 @@ function renderProducts(){
   if(sort === "priceDesc") list.sort((a,b)=>(b.price||0)-(a.price||0));
 
   grid.innerHTML = "";
-
   if(list.length === 0){
-    grid.innerHTML = `<div class="card">Brak produktów do wyświetlenia.</div>`;
+    grid.innerHTML = `<div class="card">Brak wyników.</div>`;
     return;
   }
 
@@ -106,12 +121,13 @@ function renderProducts(){
       <div class="thumb">${imgHtml}</div>
       <div class="body">
         <h3 class="pt">${esc(p.name)}</h3>
-        <p class="pd">${esc(p.desc || "")}</p>
+        <p class="pd">${esc(p.desc)}</p>
         <div class="pm">
           <span>${p.type === "lozko" ? "Łóżko" : "Materac"}</span>
           <span>•</span>
           <span>${esc((p.tags||[]).slice(0,3).join(", ") || "—")}</span>
         </div>
+
         <div class="bottom">
           <div class="price">${money(p.price)}</div>
           <div class="actions">
@@ -127,13 +143,10 @@ function renderProducts(){
 /* -------------------------
    CART
 --------------------------*/
-function ensureInit(){
-  if(!localStorage.getItem(CFG.LS.cart)) save(CFG.LS.cart, []);
-}
 function getCart(){ return load(CFG.LS.cart, []); }
 function setCart(cart){ save(CFG.LS.cart, cart); }
 function cartCount(){ return getCart().reduce((s,it)=> s + (it.qty||0), 0); }
-function renderCartBadge(){ const el=$("#cartCount"); if(el) el.textContent = String(cartCount()); }
+function renderCartBadge(){ $("#cartCount").textContent = String(cartCount()); }
 
 function addToCart(id){
   const cart = getCart().slice();
@@ -159,21 +172,17 @@ function clearCart(){
   renderCartList();
   renderCheckoutSummary();
 }
-
 function calcTotals(cart){
   const products = getProducts();
   const subtotal = cart.reduce((sum,it)=>{
     const p = products.find(x=>x.id===it.id);
-    return sum + (p ? (p.price||0) : 0) * (it.qty||0);
+    return sum + (p ? p.price : 0) * (it.qty||0);
   }, 0);
   const shipping = subtotal === 0 ? 0 : (subtotal >= 3000 ? 0 : 149);
   return { subtotal, shipping, total: subtotal + shipping };
 }
-
 function renderCartList(){
   const wrap = $("#cartList");
-  if(!wrap) return;
-
   const cart = getCart();
   wrap.innerHTML = "";
 
@@ -233,7 +242,6 @@ function renderCheckoutSummary(){
   const cart = getCart();
   if(cart.length === 0){
     box.innerHTML = `<div>Brak produktów w koszyku.</div>`;
-    const hidden = $("#orderSummaryField"); if(hidden) hidden.value = "";
     return;
   }
   const totals = calcTotals(cart);
@@ -244,13 +252,11 @@ function renderCheckoutSummary(){
     const sum = (p ? p.price : 0) * (it.qty||0);
     return `<div>${esc(name)} — ${it.qty} × ${money(p?.price||0)} = <strong>${money(sum)}</strong></div>`;
   });
-
   lines.push(`<div style="margin:10px 0;border-top:1px dashed #d6dced"></div>`);
   lines.push(`<div>Suma: <strong>${money(totals.subtotal)}</strong></div>`);
   lines.push(`<div>Dostawa: <strong>${money(totals.shipping)}</strong></div>`);
   lines.push(`<div>Razem: <strong>${money(totals.total)}</strong></div>`);
   box.innerHTML = lines.join("");
-
   const hidden = $("#orderSummaryField");
   if(hidden) hidden.value = buildOrderSummary();
 }
@@ -266,42 +272,60 @@ function close(el){ el.classList.remove("show"); el.setAttribute("aria-hidden","
 --------------------------*/
 async function boot(){
   ensureInit();
-  $("#year").textContent = new Date().getFullYear();
-
   await loadProductsRemote();
-  renderProducts();
 
+  // === HERO (JEDYNA ZMIANA):
+  // Jeśli heroImg ma ustawione src (stałe zdjęcie), chowamy placeholder.
+  const heroImg = document.getElementById("heroImg");
+  const heroPh = document.getElementById("heroPlaceholder");
+  if(heroImg && heroImg.getAttribute("src")){
+    heroImg.style.display = "block";
+    if(heroPh) heroPh.style.display = "none";
+  }
+  // === KONIEC ZMIANY HERO
+
+  renderProducts();
   renderCartBadge();
   renderCartList();
   renderCheckoutSummary();
 
-  bindNav();
+  // nav
+  $$(".navBtn, .brand").forEach(btn=>{
+    btn.addEventListener("click", (e)=>{
+      e.preventDefault();
+      const key = btn.dataset.nav || "home";
+      showPage(key);
+    });
+  });
+
+  // mobile nav
+  $("#hamb").addEventListener("click", ()=> $("#nav").classList.toggle("show"));
 
   // offer tools
-  $("#offerSearch")?.addEventListener("input", renderProducts);
-  $("#offerType")?.addEventListener("change", renderProducts);
-  $("#offerSort")?.addEventListener("change", renderProducts);
+  $("#offerSearch").addEventListener("input", renderProducts);
+  $("#offerType").addEventListener("change", renderProducts);
+  $("#offerSort").addEventListener("change", renderProducts);
 
-  // drawers
+  // cart drawer
   const drawer = $("#drawerBack");
-  $("#cartOpen")?.addEventListener("click", ()=> open(drawer));
-  $("#cartClose")?.addEventListener("click", ()=> close(drawer));
-  drawer?.addEventListener("click", (e)=>{ if(e.target === drawer) close(drawer); });
+  $("#cartOpen").addEventListener("click", ()=> open(drawer));
+  $("#cartClose").addEventListener("click", ()=> close(drawer));
+  drawer.addEventListener("click", (e)=>{ if(e.target === drawer) close(drawer); });
+  $("#cartClear").addEventListener("click", ()=>{ clearCart(); toast("Wyczyszczono koszyk"); });
 
-  $("#cartClear")?.addEventListener("click", ()=>{ clearCart(); toast("Wyczyszczono koszyk"); });
-
+  // checkout
   const checkout = $("#checkoutBack");
-  $("#checkoutOpen")?.addEventListener("click", ()=>{
+  $("#checkoutOpen").addEventListener("click", ()=>{
     if(getCart().length === 0){ toast("Koszyk pusty"); return; }
     close(drawer);
     open(checkout);
     renderCheckoutSummary();
   });
-  $("#checkoutClose")?.addEventListener("click", ()=> close(checkout));
-  checkout?.addEventListener("click", (e)=>{ if(e.target === checkout) close(checkout); });
+  $("#checkoutClose").addEventListener("click", ()=> close(checkout));
+  checkout.addEventListener("click", (e)=>{ if(e.target === checkout) close(checkout); });
 
-  // checkout validation
-  $("#checkoutForm")?.addEventListener("submit", (e)=>{
+  // checkout submit: after successful Formspree post, clear cart
+  $("#checkoutForm").addEventListener("submit", (e)=>{
     const pc = String(new FormData(e.target).get("postalCode")||"").trim();
     if(!/^\d{2}-\d{3}$/.test(pc)){
       e.preventDefault();
@@ -310,9 +334,15 @@ async function boot(){
     }
     const hidden = $("#orderSummaryField");
     if(hidden) hidden.value = buildOrderSummary();
+    clearCart();
   });
 
-  // clicks (products + cart qty)
+  // contact
+  $("#contactForm").addEventListener("submit", ()=>{
+    toast("Wysyłam wiadomość…");
+  });
+
+  // clicks (products + cart)
   document.addEventListener("click", (e)=>{
     const add = e.target.closest("[data-add]");
     if(add){ addToCart(add.dataset.add); return; }
