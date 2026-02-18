@@ -2,311 +2,207 @@
 <html lang="pl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>BrotherMeble — Łóżka i Materace</title>
-  <meta name="description" content="BrotherMeble — łóżka i materace." />
+  <meta name="description" content="BrotherMeble — łóżka tapicerowane i materace. Zamówienia online." />
   <link rel="stylesheet" href="strona.css" />
 </head>
-<body>
 
-<header class="hdr">
-  <div class="wrap">
-    <div class="hdrRow">
-      <a class="brand" href="#" data-nav="home" aria-label="BrotherMeble">
-        <span class="mark" aria-hidden="true"></span>
-        <span class="brandTxt">
-          <span class="brandName" data-editable id="brandName">BrotherMeble</span>
-          <span class="brandSub" data-editable id="brandSub">Łóżka tapicerowane • Materace</span>
-        </span>
-      </a>
+<body>
+  <header class="topbar">
+    <div class="wrap topbarIn">
+      <a class="brand" href="#home" data-nav="home">BrotherMeble</a>
 
       <nav class="nav" id="nav">
-        <button class="navBtn active" data-nav="home">Strona główna</button>
-        <button class="navBtn" data-nav="about">O nas</button>
-        <button class="navBtn" data-nav="offer">Oferta</button>
-        <button class="navBtn" data-nav="contact">Kontakt</button>
-        <button class="navBtn" data-nav="tips">Porady</button>
+        <a class="navBtn active" href="#home" data-nav="home">Start</a>
+        <a class="navBtn" href="#offer" data-nav="offer">Oferta</a>
+        <a class="navBtn" href="#contact" data-nav="contact">Kontakt</a>
+        <a class="navBtn" href="/admin/" target="_blank" rel="noopener">Panel</a>
       </nav>
 
-      <div class="hdrActions">
-        <button class="iconBtn" id="cartOpen" title="Koszyk">
-          🛒 <span class="pill" id="cartCount">0</span>
+      <div class="topActions">
+        <button class="btn ghost" id="cartOpen" type="button">
+          Koszyk <span class="badge" id="cartCount">0</span>
         </button>
-
-        <button class="hamb" id="hamb" aria-label="Menu">☰</button>
+        <button class="btn ghost hamb" id="hamb" type="button" aria-label="Menu">☰</button>
       </div>
     </div>
-  </div>
-</header>
+  </header>
 
-<!-- ADMIN BAR (po odblokowaniu) -->
-<div class="adminBar" id="adminBar" aria-hidden="true">
-  <div class="wrap">
-    <div class="adminRow">
-      <div class="adminLeft">
-        <span class="tag">Tryb: <strong>ADMIN</strong></span>
-        <span class="tag">Edycja treści: <strong>kliknij tekst</strong></span>
-      </div>
-      <div class="adminRight">
-        <button class="btn" id="undoBtn">Cofnij</button>
-        <button class="btn" id="redoBtn">Ponów</button>
-        <button class="btn" id="saveBtn">Zapisz</button>
-        <button class="btn danger" id="resetBtn">Reset</button>
-        <button class="btn ghost" id="adminLogoutBtn">Wyłącz admin</button>
-      </div>
-    </div>
-  </div>
-</div>
+  <main>
+    <!-- HOME -->
+    <section class="page show" id="page-home">
+      <div class="wrap">
+        <h1 class="h1">BrotherMeble</h1>
+        <p class="lead">
+          Łóżka tapicerowane i materace. Dodaj do koszyka i wyślij zamówienie — odezwiemy się z potwierdzeniem.
+        </p>
 
-<main class="main">
-
-  <!-- HOME -->
-  <section class="page show" id="page-home">
-    <div class="wrap">
-      <h1 class="h1" data-editable id="homeH1">BrotherMeble</h1>
-      <p class="lead" data-editable id="homeLead">
-        Wybierz łóżko lub materac. Koszyk działa. Dodaj produkt do koszyka i złóż zamówienie. Płatności podepniemy w kolejnym kroku.
-      </p>
-
-      <div class="heroFrame">
-        <div class="heroCanvas" id="heroCanvas">
-          <img id="heroImg" alt="" />
-          <div class="heroPlaceholder" id="heroPlaceholder">
-            <div class="phTitle" data-editable id="heroPlaceholderTitle">Miejsce na zdjęcie (hero)</div>
-            <div class="phSub" data-editable id="heroPlaceholderSub">Kliknij “Wybierz zdjęcie” i wstaw grafikę.</div>
+        <div class="heroFrame">
+          <div class="heroCanvas">
+            <!-- Stałe zdjęcie: wrzuć plik do assets/uploads/hero.jpg -->
+            <img id="heroImg" src="/assets/uploads/hero.jpg" alt="BrotherMeble" />
           </div>
         </div>
 
-        <div class="heroControls">
-          <label class="fileBtn">
-            Wybierz zdjęcie
-            <input type="file" id="heroFile" accept="image/*" />
-          </label>
-          <button class="btn ghost" id="heroClear" type="button">Usuń zdjęcie</button>
-          <div class="mini" data-editable id="heroMiniNote">
-            Zdjęcie hero zapisuje się lokalnie w przeglądarce. Na docelowej wersji podepniemy upload.
-          </div>
+        <div class="ctaRow">
+          <a class="btn primary" href="#offer" data-nav="offer">Zobacz ofertę</a>
+          <a class="btn ghost" href="#contact" data-nav="contact">Kontakt</a>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ABOUT -->
-  <section class="page" id="page-about">
-    <div class="wrap">
-      <h2 class="h2" data-editable id="aboutTitle">O nas</h2>
-      <div class="card">
-        <p class="p" data-editable id="aboutP1">
-          BrotherMeble to produkcja i sprzedaż łóżek tapicerowanych oraz materacy. Stawiamy na solidne wykonanie,
-          dopracowane detale i jakość, która robi różnicę w codziennym użytkowaniu.
-        </p>
-        <p class="p" data-editable id="aboutP2">
-          Realizujemy zamówienia standardowe i pod klienta. Doradzimy w doborze wymiaru, tkaniny oraz materaca.
-        </p>
-        <div class="infoBox">
-          <div><strong>E-mail:</strong> <a href="mailto:brothermeble24@gmail.com">brothermeble24@gmail.com</a></div>
-          <div data-editable id="aboutPhone"><strong>Telefon:</strong> [dodaj numer]</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- OFFER -->
-  <section class="page" id="page-offer">
-    <div class="wrap">
-      <div class="offerHead">
-        <div>
+    <!-- OFFER -->
+    <section class="page" id="page-offer">
+      <div class="wrap">
+        <div class="sectionHead">
           <h2 class="h2">Oferta</h2>
-          <p class="sub" data-editable id="offerSub">
-            Tylko łóżka i materace. Dodaj do koszyka, zamów w demo checkout.
-          </p>
+          <p class="muted">Produkty edytujesz w panelu /admin.</p>
         </div>
 
-        <div class="offerTools">
-          <input class="search" id="offerSearch" type="search" placeholder="Szukaj w ofercie..." />
-          <select class="select" id="offerType">
-            <option value="all">Wszystko</option>
+        <div class="tools">
+          <input class="in" id="offerSearch" placeholder="Szukaj (nazwa, opis, tagi)..." />
+          <select class="in" id="offerType">
+            <option value="all">Wszystkie</option>
             <option value="lozko">Łóżka</option>
             <option value="materac">Materace</option>
           </select>
-          <select class="select" id="offerSort">
+          <select class="in" id="offerSort">
             <option value="pop">Popularność</option>
             <option value="priceAsc">Cena rosnąco</option>
             <option value="priceDesc">Cena malejąco</option>
           </select>
         </div>
+
+        <div class="grid" id="productsGrid"></div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="page" id="page-contact">
+      <div class="wrap">
+        <h2 class="h2">Kontakt</h2>
+        <p class="muted">Odpowiemy możliwie szybko.</p>
+
+        <form class="form simple" id="contactForm"
+              action="https://formspree.io/f/mqedprzg"
+              method="POST">
+          <div class="row2">
+            <div>
+              <label>Imię</label>
+              <input class="in" name="name" required />
+            </div>
+            <div>
+              <label>Telefon</label>
+              <input class="in" name="phone" />
+            </div>
+          </div>
+
+          <div>
+            <label>Email</label>
+            <input class="in" type="email" name="email" required />
+          </div>
+
+          <div>
+            <label>Wiadomość</label>
+            <textarea class="in" name="message" rows="6" required></textarea>
+          </div>
+
+          <button class="btn primary" type="submit">Wyślij</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap footIn">
+      <div>© <span id="year"></span> BrotherMeble</div>
+      <div class="muted">email: brothermeble24@gmail.com</div>
+    </div>
+  </footer>
+
+  <!-- CART DRAWER -->
+  <div class="overlay" id="drawerBack" aria-hidden="true">
+    <div class="drawer">
+      <div class="drawerHead">
+        <div class="h3">Koszyk</div>
+        <button class="btn ghost" id="cartClose" type="button">Zamknij</button>
       </div>
 
-      <div class="grid" id="productsGrid"></div>
-</section>
+      <div id="cartList"></div>
 
-  <!-- CONTACT -->
-  <section class="page" id="page-contact">
-    <div class="wrap">
-      <h2 class="h2">Kontakt</h2>
-      <div class="two">
-        <div class="card">
-          <p class="p" data-editable id="contactText">
-            Napisz do nas. Formularz działa jako demo — później podepniemy Formspree bez zmian w wyglądzie.
-          </p>
-          <div class="infoBox">
-            <div><strong>E-mail:</strong> <a href="mailto:brothermeble24@gmail.com">brothermeble24@gmail.com</a></div>
-            <div data-editable id="contactPhone"><strong>Telefon:</strong> [dodaj numer]</div>
+      <div class="totals">
+        <div><span>Suma</span><strong id="subTotal">0 zł</strong></div>
+        <div><span>Dostawa</span><strong id="shipTotal">0 zł</strong></div>
+        <div class="grand"><span>Razem</span><strong id="grandTotal">0 zł</strong></div>
+      </div>
+
+      <div class="drawerActions">
+        <button class="btn ghost" id="cartClear" type="button">Wyczyść</button>
+        <button class="btn primary" id="checkoutOpen" type="button">Zamów</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKOUT -->
+  <div class="overlay" id="checkoutBack" aria-hidden="true">
+    <div class="drawer">
+      <div class="drawerHead">
+        <div class="h3">Zamówienie</div>
+        <button class="btn ghost" id="checkoutClose" type="button">Zamknij</button>
+      </div>
+
+      <div class="card" id="summary"></div>
+
+      <form class="form checkout" id="checkoutForm"
+            action="https://formspree.io/f/mzdavvev"
+            method="POST">
+        <div class="row2">
+          <div>
+            <label>Imię i nazwisko</label>
+            <input class="in" name="fullName" required />
+          </div>
+          <div>
+            <label>Telefon</label>
+            <input class="in" name="phone" required />
           </div>
         </div>
 
-        <div class="card">
-          <form class="form simple" id="contactForm" action="https://formspree.io/f/mqedprzg" method="POST">
-            <input type="hidden" name="_subject" value="Nowa wiadomość ze strony BrotherMeble" />
-            <div class="formRow">
-              <label>Imię i nazwisko</label>
-              <input name="name" required />
-            </div>
-            <div class="formRow">
-              <label>E-mail</label>
-              <input name="email" type="email" required />
-            </div>
-            <div class="formRow">
-              <label>Wiadomość</label>
-              <textarea name="message" required></textarea>
-            </div>
-            <button class="btn primary" type="submit">Wyślij</button>
-          </form>
+        <div>
+          <label>Email</label>
+          <input class="in" type="email" name="email" required />
         </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- TIPS -->
-  <section class="page" id="page-tips">
-    <div class="wrap">
-      <h2 class="h2" data-editable id="tipsTitle">Porady</h2>
-      <div class="card">
-        <h3 class="h3" data-editable id="tip1Title">Jak dobrać rozmiar łóżka?</h3>
-        <p class="p" data-editable id="tip1Text">
-          Najczęściej wybierane wymiary to 140×200, 160×200 i 180×200. Jeśli masz małą sypialnię, postaw na 140 lub 160.
-        </p>
-
-        <h3 class="h3" data-editable id="tip2Title">Jak dobrać materac?</h3>
-        <p class="p" data-editable id="tip2Text">
-          Kluczowe są: waga, preferowana twardość i pozycja spania. Jeśli nie wiesz — napisz do nas, pomożemy dobrać opcję.
-        </p>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<footer class="ftr">
-  <div class="wrap">
-    <div class="fRow">
-      <div class="fLeft">
-        <div class="fBrand" data-editable id="footerBrand">BrotherMeble</div>
-        <div class="fText" data-editable id="footerText">
-          Łóżka i materace. Segment premium. Doradztwo i realizacja zamówień.
+        <div class="row2">
+          <div>
+            <label>Miasto</label>
+            <input class="in" name="city" required />
+          </div>
+          <div>
+            <label>Kod pocztowy (00-000)</label>
+            <input class="in" name="postalCode" placeholder="00-000" required />
+          </div>
         </div>
-      </div>
-      <div class="fRight">
-        <a class="fLink" href="mailto:brothermeble24@gmail.com">brothermeble24@gmail.com</a>
-        <span class="fMini">© <span id="year"></span></span>
-      </div>
-    </div>
-  </div>
-</footer>
 
-<!-- CART DRAWER -->
-<div class="drawerBack" id="drawerBack" aria-hidden="true">
-  <aside class="drawer" role="dialog" aria-label="Koszyk">
-    <div class="dHead">
-      <div class="dTitle">Koszyk</div>
-      <button class="x" id="cartClose" aria-label="Zamknij">✕</button>
-    </div>
-    <div class="dBody">
-      <div id="cartList" class="cartList"></div>
-      <div class="totals">
-        <div class="tRow"><span>Suma</span><strong id="subTotal">0 zł</strong></div>
-        <div class="tRow"><span>Dostawa (demo)</span><strong id="shipTotal">0 zł</strong></div>
-        <div class="tRow tBig"><span>Razem</span><strong id="grandTotal">0 zł</strong></div>
-
-        <button class="btn primary w100" id="checkoutOpen" type="button">Zamów</button>
-        <button class="btn ghost w100" id="cartClear" type="button">Wyczyść koszyk</button>
-      </div>
-    </div>
-  </aside>
-</div>
-
-<!-- CHECKOUT MODAL -->
-<div class="modalBack" id="checkoutBack" aria-hidden="true">
-  <div class="modal" role="dialog" aria-label="Zamówienie">
-    <div class="mHead">
-      <div class="mTitle">Zamówienie</div>
-      <button class="x" id="checkoutClose" aria-label="Zamknij">✕</button>
-    </div>
-    <div class="mBody">
-      <div class="noteLine">Docelowo zamówienie trafi na: <strong>brothermeble24@gmail.com</strong></div>
-
-      <form class="form checkout" id="checkoutForm" action="https://formspree.io/f/mzdavvev" method="POST">
-        <input type="hidden" name="_subject" value="Nowe zamówienie — BrotherMeble" />
-        <input type="hidden" name="orderSummary" id="orderSummaryField" value="" />
-        <div class="formRow">
-          <label>Imię i nazwisko</label>
-          <input name="fullName" required />
-        </div>
-        <div class="formRow">
-          <label>E-mail</label>
-          <input name="email" type="email" required />
-        </div>
-        <div class="formRow">
-          <label>Telefon</label>
-          <input name="phone" required />
-        </div>
-        <div class="formRow">
-          <label>Kod pocztowy</label>
-          <input name="postalCode" placeholder="00-000" required />
-        </div>
-        <div class="formRow">
-          <label>Miasto</label>
-          <input name="city" required />
-        </div>
-        <div class="formRow span2">
+        <div>
           <label>Adres</label>
-          <input name="address" required />
+          <input class="in" name="address" required />
         </div>
-        <div class="formRow span2">
+
+        <div>
           <label>Uwagi</label>
-          <textarea name="notes"></textarea>
+          <textarea class="in" name="notes" rows="3"></textarea>
         </div>
 
-        <button class="btn primary span2" type="submit">Złóż zamówienie</button>
-      </form>
+        <input type="hidden" id="orderSummaryField" name="orderSummary" value="" />
 
-      <div class="sumBox">
-        <div class="sumTitle">Podsumowanie</div>
-        <div id="summary" class="sumList"></div>
-      </div>
+        <button class="btn primary" type="submit">Wyślij zamówienie</button>
+      </form>
     </div>
   </div>
-</div>
-</div>
 
-<div class="toast" id="toast" aria-live="polite"></div>
+  <div class="toast" id="toast"></div>
 
-<!-- 1) zwykły kod strony -->
-
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-
-<script>
-  if (window.netlifyIdentity) {
-    window.netlifyIdentity.on("init", user => {
-      if (!user) {
-        window.netlifyIdentity.on("login", () => {
-          document.location.href = "/admin/";
-        });
-      }
-    });
-  }
-</script>
-
-<script src="strona.js"></script>
+  <script src="strona.js"></script>
 </body>
 </html>
