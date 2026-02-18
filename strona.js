@@ -274,6 +274,19 @@ async function boot(){
   ensureInit();
   await loadProductsRemote();
 
+     // HERO z CMS (tylko Ty edytujesz w /admin)
+  const settings = await loadSiteSettings();
+  const heroImg = document.getElementById("heroImg");
+  const heroPh = document.getElementById("heroPlaceholder");
+
+  if(settings?.heroImage && heroImg){
+    heroImg.src = settings.heroImage;
+    heroImg.alt = settings.heroAlt || "BrotherMeble";
+    heroImg.style.display = "block";
+    if(heroPh) heroPh.style.display = "none";
+  }
+
+
   // === HERO (JEDYNA ZMIANA):
   // Jeśli heroImg ma ustawione src (stałe zdjęcie), chowamy placeholder.
   const heroImg = document.getElementById("heroImg");
@@ -360,6 +373,16 @@ async function boot(){
   });
 
   showPage("home");
+}
+
+async function loadSiteSettings(){
+  try{
+    const res = await fetch("content/site.json", { cache: "no-store" });
+    if(!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
 }
 
 boot();
