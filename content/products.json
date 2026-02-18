@@ -5,32 +5,23 @@
       "type": "lozko",
       "name": "Łóżko Marco",
       "price": 2699,
-      "desc": "Nowoczesne łóżko tapicerowane. Opcjonalny pojemnik na pościel.",
+      "desc": "Nowoczesne łóżko tapicerowane",
       "img": ""
     },
     {
-      "id": "lozko-slim-edge",
+      "id": "lozko-slim",
       "type": "lozko",
-      "name": "Łóżko Slim Edge",
-      "price": 2399,
-      "desc": "Smukła forma, idealna do mniejszych sypialni. Premium wygląd.",
-      "img": ""
+      "name": "Łóżko slim VII",
+      "price": 2099,
+      "desc": "łóżko tapicerowane",
+      "img": "/assets/uploads/chatgpt-image-18-lut-2026-12_10_23.png"
     },
     {
-      "id": "materac-active-160",
-      "type": "materac",
-      "name": "Materac Active 160×200",
-      "price": 1099,
-      "desc": "Kieszeniowy + pianka. Stabilne podparcie, dobry komfort.",
-      "img": ""
-    },
-    {
-      "id": "materac-comfort-140",
-      "type": "materac",
-      "name": "Materac Comfort 140×200",
-      "price": 899,
-      "desc": "Piankowy materac do codziennego użytkowania.",
-      "img": ""
+      "id": "test-123",
+      "type": "lozko",
+      "name": "TEST",
+      "price": 123,
+      "desc": "test"
     }
   ]
 }
