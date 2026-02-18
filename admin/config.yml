@@ -24,3 +24,12 @@ collections:
               - { label: "Cena", name: "price", widget: "number" }
               - { label: "Opis", name: "desc", widget: "text" }
               - { label: "Zdjęcie", name: "img", widget: "image", required: false }
+  - name: "settings"
+    label: "Ustawienia"
+    files:
+      - name: "site"
+        label: "Strona (Hero)"
+        file: "content/site.json"
+        fields:
+          - { label: "Zdjęcie hero", name: "heroImage", widget: "image" }
+          - { label: "ALT (opis obrazka)", name: "heroAlt", widget: "string", required: false }
