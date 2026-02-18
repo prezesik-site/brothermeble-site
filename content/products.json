@@ -1,0 +1,12 @@
+{
+  "items": [
+    {
+      "id": "lozko-marco",
+      "type": "lozko",
+      "name": "Łóżko Marco",
+      "price": 2699,
+      "desc": "Nowoczesne łóżko tapicerowane",
+      "img": ""
+    }
+  ]
+}
