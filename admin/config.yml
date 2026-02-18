@@ -5,6 +5,10 @@ backend:
 media_folder: "assets/uploads"
 public_folder: "/assets/uploads"
 
+slug:
+  encoding: "ascii"
+  clean_accents: true
+
 collections:
   - name: "products"
     label: "Produkty"
@@ -24,6 +28,7 @@ collections:
               - { label: "Cena", name: "price", widget: "number" }
               - { label: "Opis", name: "desc", widget: "text" }
               - { label: "Zdjęcie", name: "img", widget: "image", required: false }
+
   - name: "settings"
     label: "Ustawienia"
     files:
