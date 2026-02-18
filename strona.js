@@ -268,34 +268,42 @@ function open(el){ el.classList.add("show"); el.setAttribute("aria-hidden","fals
 function close(el){ el.classList.remove("show"); el.setAttribute("aria-hidden","true"); }
 
 /* -------------------------
+   SITE SETTINGS (CMS) — HERO
+--------------------------*/
+async function loadSiteSettings(){
+  try{
+    const res = await fetch("content/site.json", { cache: "no-store" });
+    if(!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+/* -------------------------
    BOOT
 --------------------------*/
 async function boot(){
   ensureInit();
   await loadProductsRemote();
 
-     // HERO z CMS (tylko Ty edytujesz w /admin)
+  // HERO z CMS (tylko Ty edytujesz w /admin)
   const settings = await loadSiteSettings();
   const heroImg = document.getElementById("heroImg");
   const heroPh = document.getElementById("heroPlaceholder");
 
-  if(settings?.heroImage && heroImg){
+  if (heroImg && settings?.heroImage) {
     heroImg.src = settings.heroImage;
     heroImg.alt = settings.heroAlt || "BrotherMeble";
     heroImg.style.display = "block";
-    if(heroPh) heroPh.style.display = "none";
+    if (heroPh) heroPh.style.display = "none";
+  } else {
+    // fallback: jeśli src w HTML istnieje
+    if (heroImg && heroImg.getAttribute("src")) {
+      heroImg.style.display = "block";
+      if (heroPh) heroPh.style.display = "none";
+    }
   }
-
-
-  // === HERO (JEDYNA ZMIANA):
-  // Jeśli heroImg ma ustawione src (stałe zdjęcie), chowamy placeholder.
-  const heroImg = document.getElementById("heroImg");
-  const heroPh = document.getElementById("heroPlaceholder");
-  if(heroImg && heroImg.getAttribute("src")){
-    heroImg.style.display = "block";
-    if(heroPh) heroPh.style.display = "none";
-  }
-  // === KONIEC ZMIANY HERO
 
   renderProducts();
   renderCartBadge();
@@ -373,16 +381,6 @@ async function boot(){
   });
 
   showPage("home");
-}
-
-async function loadSiteSettings(){
-  try{
-    const res = await fetch("content/site.json", { cache: "no-store" });
-    if(!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
 }
 
 boot();
